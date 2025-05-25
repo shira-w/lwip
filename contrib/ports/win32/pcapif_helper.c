@@ -18,64 +18,78 @@
 #pragma warning( push, 3 )
 #endif
 #include <windows.h>
-#include <packet32.h>
+ //#include <packet32.h>
 #include <ntddndis.h>
 #ifdef _MSC_VER
 #pragma warning ( pop )
 #endif
+//TODO drop after i add this to cmple
+//typedef void* LPADAPTER;
+typedef struct _ADAPTER {
+    HANDLE hFile;
+    // other members...
+} ADAPTER, * LPADAPTER;
 
+typedef struct _PACKET_OID_DATA {
+    unsigned long Oid;
+    unsigned long Length;
+    unsigned char Data[1];
+} PACKET_OID_DATA, * PPACKET_OID_DATA;
+
+//till here
 struct pcapifh_linkstate {
-  LPADAPTER        lpAdapter;
-  PPACKET_OID_DATA ppacket_oid_data;
+    //LPADAPTER        lpAdapter;
+    PPACKET_OID_DATA ppacket_oid_data;
 };
 
-struct pcapifh_linkstate* pcapifh_linkstate_init(char *adapter_name)
+struct pcapifh_linkstate* pcapifh_linkstate_init(char* adapter_name)
 {
-  struct pcapifh_linkstate* state = (struct pcapifh_linkstate*)malloc(sizeof(struct pcapifh_linkstate));
-  if (state != NULL) {
-    memset(state, 0, sizeof(struct pcapifh_linkstate));
-    state->ppacket_oid_data = (PPACKET_OID_DATA)malloc(sizeof(PACKET_OID_DATA) + sizeof(NDIS_MEDIA_STATE));
-    if (state->ppacket_oid_data == NULL) {
-      free(state);
-      state = NULL;
-    } else {
-      state->lpAdapter = PacketOpenAdapter((char*)adapter_name);
-      if ((state->lpAdapter == NULL) || (state->lpAdapter->hFile == INVALID_HANDLE_VALUE)) {
-        /* failed to open adapter */
-        free(state);
-        state = NULL;
-      }
+    struct pcapifh_linkstate* state = (struct pcapifh_linkstate*)malloc(sizeof(struct pcapifh_linkstate));
+    if (state != NULL) {
+        memset(state, 0, sizeof(struct pcapifh_linkstate));
+        state->ppacket_oid_data = (PPACKET_OID_DATA)malloc(sizeof(PACKET_OID_DATA) + sizeof(NDIS_MEDIA_STATE));
+        if (state->ppacket_oid_data == NULL) {
+            free(state);
+            state = NULL;
+        }
+        else {
+            //  state->lpAdapter = PacketOpenAdapter((char*)adapter_name);
+              /*if ((state->lpAdapter == NULL) || (state->lpAdapter->hFile == INVALID_HANDLE_VALUE)) {
+                /* failed to open adapter */
+                /* free(state);
+                 state = NULL;
+               }*/
+        }
     }
-  }
-  return state;
+    return state;
 }
 
 enum pcapifh_link_event pcapifh_linkstate_get(struct pcapifh_linkstate* state)
 {
-  enum pcapifh_link_event ret = PCAPIF_LINKEVENT_UNKNOWN;
-  if (state != NULL) {
-    state->ppacket_oid_data->Oid    = OID_GEN_MEDIA_CONNECT_STATUS;
-    state->ppacket_oid_data->Length = sizeof(NDIS_MEDIA_STATE);
-    if (PacketRequest(state->lpAdapter, FALSE, state->ppacket_oid_data)) {
-      NDIS_MEDIA_STATE fNdisMediaState;
-      fNdisMediaState = (*((PNDIS_MEDIA_STATE)(state->ppacket_oid_data->Data)));
-      ret = ((fNdisMediaState == NdisMediaStateConnected) ? PCAPIF_LINKEVENT_UP : PCAPIF_LINKEVENT_DOWN);
+    enum pcapifh_link_event ret = PCAPIF_LINKEVENT_UNKNOWN;
+    if (state != NULL) {
+        state->ppacket_oid_data->Oid = OID_GEN_MEDIA_CONNECT_STATUS;
+        state->ppacket_oid_data->Length = sizeof(NDIS_MEDIA_STATE);
+        /*    if (PacketRequest(state->lpAdapter, FALSE, state->ppacket_oid_data)) {
+              NDIS_MEDIA_STATE fNdisMediaState;
+              fNdisMediaState = (*((PNDIS_MEDIA_STATE)(state->ppacket_oid_data->Data)));
+              ret = ((fNdisMediaState == NdisMediaStateConnected) ? PCAPIF_LINKEVENT_UP : PCAPIF_LINKEVENT_DOWN);
+            }*/
     }
-  }
-  return ret;
+    return ret;
 }
 
 void pcapifh_linkstate_close(struct pcapifh_linkstate* state)
 {
-  if (state != NULL) {
-    if (state->lpAdapter != NULL) {
-      PacketCloseAdapter(state->lpAdapter);
+    if (state != NULL) {
+        /**if (state->lpAdapter != NULL) {
+           PacketCloseAdapter(state->lpAdapter);
+         }*/
+        if (state->ppacket_oid_data != NULL) {
+            free(state->ppacket_oid_data);
+        }
+        free(state);
     }
-    if (state->ppacket_oid_data != NULL) {
-      free(state->ppacket_oid_data);
-    }
-    free(state);
-  }
 }
 
 /** Helper function for PCAPIF_RX_READONLY for windows: copy the date to a new
@@ -83,35 +97,35 @@ void pcapifh_linkstate_close(struct pcapifh_linkstate* state)
  * This is a helper to simulate hardware that receives to memory that cannot be
  * written by the CPU.
  */
-void *
-pcapifh_alloc_readonly_copy(void *data, size_t len)
+void*
+pcapifh_alloc_readonly_copy(void* data, size_t len)
 {
-  DWORD oldProtect;
-  void *ret;
-  if (len > 4096) {
-    lwip_win32_platform_diag("pcapifh_alloc_readonly_copy: invalid len: %d\n", len);
-    while(1);
-  }
-  ret = VirtualAlloc(NULL, 4096, MEM_COMMIT, PAGE_READWRITE);
-  if (ret == NULL) {
-    lwip_win32_platform_diag("VirtualAlloc failed: %d\n", GetLastError());
-    while(1);
-  }
-  memcpy(ret, data, len);
-  if (!VirtualProtect(ret, len, PAGE_READONLY, &oldProtect)) {
-    lwip_win32_platform_diag("VirtualProtect failed: %d\n", GetLastError());
-    while(1);
-  }
-  return ret;
+    DWORD oldProtect;
+    void* ret;
+    if (len > 4096) {
+        lwip_win32_platform_diag("pcapifh_alloc_readonly_copy: invalid len: %d\n", len);
+        while (1);
+    }
+    ret = VirtualAlloc(NULL, 4096, MEM_COMMIT, PAGE_READWRITE);
+    if (ret == NULL) {
+        lwip_win32_platform_diag("VirtualAlloc failed: %d\n", GetLastError());
+        while (1);
+    }
+    memcpy(ret, data, len);
+    if (!VirtualProtect(ret, len, PAGE_READONLY, &oldProtect)) {
+        lwip_win32_platform_diag("VirtualProtect failed: %d\n", GetLastError());
+        while (1);
+    }
+    return ret;
 }
 
 void
-pcapifh_free_readonly_mem(void *data)
+pcapifh_free_readonly_mem(void* data)
 {
-  if (!VirtualFree(data, 0, MEM_RELEASE)) {
-    lwip_win32_platform_diag("VirtualFree(0x%08x) failed: %d\n", data, GetLastError());
-    while(1);
-  }
+    if (!VirtualFree(data, 0, MEM_RELEASE)) {
+        lwip_win32_platform_diag("VirtualFree(0x%08x) failed: %d\n", data, GetLastError());
+        while (1);
+    }
 }
 
 /**
@@ -120,49 +134,49 @@ pcapifh_free_readonly_mem(void *data)
  */
 void pcapifh_init_npcap(void)
 {
-  char npcap_dir[512];
-  unsigned int len;
-  static char npcap_initialized = 0;
+    char npcap_dir[512];
+    unsigned int len;
+    static char npcap_initialized = 0;
 
-  if (!npcap_initialized)
-  {
-    npcap_initialized = 1;
+    if (!npcap_initialized)
+    {
+        npcap_initialized = 1;
 
-    len = GetSystemDirectory(npcap_dir, 480);
-    if (!len) {
-      lwip_win32_platform_diag("Error in GetSystemDirectory: %x", GetLastError());
-      return;
+        len = GetSystemDirectory(npcap_dir, 480);
+        if (!len) {
+            lwip_win32_platform_diag("Error in GetSystemDirectory: %x", GetLastError());
+            return;
+        }
+        strcat_s(npcap_dir, 512, "\\Npcap");
+        if (SetDllDirectory(npcap_dir) == 0) {
+            lwip_win32_platform_diag("Error in SetDllDirectory: %x", GetLastError());
+            return;
+        }
     }
-    strcat_s(npcap_dir, 512, "\\Npcap");
-    if (SetDllDirectory(npcap_dir) == 0) {
-      lwip_win32_platform_diag("Error in SetDllDirectory: %x", GetLastError());
-      return;
-    }
-  }
 }
 
 #else /* WIN32 */
 
-/* @todo: add linux/unix implementation? */
+ /* @todo: add linux/unix implementation? */
 
 struct pcapifh_linkstate {
-  u8_t empty;
+    u8_t empty;
 };
 
-struct pcapifh_linkstate* pcapifh_linkstate_init(char *adapter_name)
+struct pcapifh_linkstate* pcapifh_linkstate_init(char* adapter_name)
 {
-  LWIP_UNUSED_ARG(adapter_name);
-  return NULL;
+    LWIP_UNUSED_ARG(adapter_name);
+    return NULL;
 }
 
 enum pcapifh_link_event pcapifh_linkstate_get(struct pcapifh_linkstate* state)
 {
-  LWIP_UNUSED_ARG(state);
-  return PCAPIF_LINKEVENT_UP;
+    LWIP_UNUSED_ARG(state);
+    return PCAPIF_LINKEVENT_UP;
 }
 void pcapifh_linkstate_close(struct pcapifh_linkstate* state)
 {
-  LWIP_UNUSED_ARG(state);
+    LWIP_UNUSED_ARG(state);
 }
 
 void pcapifh_init_npcap(void)
