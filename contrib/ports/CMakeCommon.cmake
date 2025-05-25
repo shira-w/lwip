@@ -44,7 +44,7 @@ set(LWIP_COMPILER_FLAGS_GNU_CLANG
     $<$<CONFIG:Release>:-O3>
     -Wall
     -pedantic
-    -Werror
+#    -Werror
     -Wparentheses
     -Wsequence-point
     -Wswitch-default
@@ -122,7 +122,7 @@ if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
     set(LWIP_COMPILER_FLAGS
         $<$<CONFIG:Debug>:/Od>
         $<$<CONFIG:Release>:/Ox>
-        /W4
-        /WX
+#        /W4
+#        /WX
     )
 endif()

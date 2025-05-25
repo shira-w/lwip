@@ -40,8 +40,8 @@ ARCHFILES=$(SYSARCH) $(LWIPARCH)/pcapif.c \
 WIN32_COMMON_MK_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 include $(WIN32_COMMON_MK_DIR)/../Common.allports.mk
 
-PCAPDIR=$(PCAP_DIR)/Include
-LDFLAGS+=-L$(PCAP_DIR)/lib -lwpcap -lpacket
+#PCAPDIR=$(PCAP_DIR)/Include
+#LDFLAGS+=-L$(PCAP_DIR)/lib -lwpcap -lpacket
 # -Wno-format: GCC complains about non-standard 64 bit modifier needed for MSVC runtime
 CFLAGS+=-I$(PCAPDIR) -Wno-format
 

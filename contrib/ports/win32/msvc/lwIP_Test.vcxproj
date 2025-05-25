@@ -146,7 +146,8 @@
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Packet.lib;wpcap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		<!--Packet.lib;wpcap.lib;-->
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(PCAP_DIR)\Lib;..\..\..\..\..\winpcap\WpdPack\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\Release/test.pdb</ProgramDatabaseFile>
@@ -156,7 +157,8 @@
       </DataExecutionPrevention>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>$(TargetDir)$(TargetName).map</MapFileName>
-      <DelayLoadDLLs>Packet.dll;wpcap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+		<!--Packet.dll;wpcap.dll-->
+      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -228,7 +230,7 @@
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Packet.lib;wpcap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!----><AdditionalDependencies>Packet.lib;wpcap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(PCAP_DIR)\Lib;..\..\..\..\..\winpcap\WpdPack\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
