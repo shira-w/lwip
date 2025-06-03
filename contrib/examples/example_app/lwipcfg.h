@@ -55,7 +55,7 @@
 #define LWIP_NETIO_APP                0
 #define LWIP_MDNS_APP                 0
 #define LWIP_MQTT_APP                 0
-#define LWIP_PING_APP                 1
+#define LWIP_PING_APP                 0
 #define LWIP_RTP_APP                  0
 #define LWIP_SHELL_APP                0
 #define LWIP_SNMP_APP                 0
@@ -67,7 +67,7 @@
 /*#define LWIP_TCPECHO_APP_NETCONN   */
 #define LWIP_TFTP_APP                 0
 #define LWIP_TFTP_CLIENT_APP          0
-#define LWIP_UDPECHO_APP              0
+#define LWIP_UDPECHO_APP              1
 #define LWIP_NETCONN                  0
 #define LWIP_LWIPERF_APP              0
 

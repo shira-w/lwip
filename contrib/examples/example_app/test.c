@@ -1,3 +1,5 @@
+//TODO what to do with test? drop what not need -ping etc..
+
 /*
  * Copyright (c) 2001,2002 Florian Schulze.
  * All rights reserved.
@@ -565,6 +567,9 @@ apps_init(void)
 #if LWIP_UDPECHO_APP && LWIP_NETCONN
   udpecho_init();
 #endif /* LWIP_UDPECHO_APP && LWIP_NETCONN */
+#if LWIP_UDPECHO_APP
+  udpecho_raw_init();
+#endif
 #if LWIP_SOCKET_EXAMPLES_APP && LWIP_SOCKET
   socket_examples_init();
 #endif /* LWIP_SOCKET_EXAMPLES_APP && LWIP_SOCKET */
