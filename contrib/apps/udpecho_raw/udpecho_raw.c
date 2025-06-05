@@ -35,14 +35,14 @@
  * Stephan Linz rewrote this file to get a basic echo example.
  */
 
-/**
- * @file
- * UDP echo server example using raw API.
- *
- * Echos all bytes sent by connecting client,
- * and passively closes when client is done.
- *
- */
+ /**
+  * @file
+  * UDP echo server example using raw API.
+  *
+  * Echos all bytes sent by connecting client,
+  * and passively closes when client is done.
+  *
+  */
 
 #include "lwip/opt.h"
 #include "lwip/debug.h"
@@ -51,38 +51,77 @@
 #include "udpecho_raw.h"
 
 #if LWIP_UDP
-
-static struct udp_pcb *udpecho_raw_pcb;
+static const ip_addr_t* udp_target;
+static u16_t udp_target_port;
+static struct udp_pcb* udpecho_raw_pcb;
 
 static void
-udpecho_raw_recv(void *arg, struct udp_pcb *upcb, struct pbuf *p,
-                 const ip_addr_t *addr, u16_t port)
+udpecho_raw_recv(void* arg, struct udp_pcb* upcb, struct pbuf* p,
+	const ip_addr_t* addr, u16_t port)
 {
-  LWIP_UNUSED_ARG(arg);
-  if (p != NULL) {
-    /* send received packet back to sender */
-    udp_sendto(upcb, p, addr, port);
-    /* free the pbuf */
-    pbuf_free(p);
-  }
+	LWIP_UNUSED_ARG(arg);
+	if (p != NULL) {
+		/* send received packet back to sender */
+		udp_sendto(upcb, p, addr, port);
+		/* free the pbuf */
+		pbuf_free(p);
+	}
+}
+/*
+static void
+ping_raw_init(void)
+{
+	ping_pcb = raw_new(IP_PROTO_ICMP);
+	LWIP_ASSERT("ping_pcb != NULL", ping_pcb != NULL);
+
+	raw_recv(ping_pcb, ping_recv, NULL);
+	raw_bind(ping_pcb, IP_ADDR_ANY);
+	sys_timeout(PING_DELAY, ping_timeout, ping_pcb);
+}
+*/
+//I add
+static void
+udpecho_raw_send( struct udp_pcb* upcb)
+{
+	const char* data = "Hello, Echo!";
+	if (upcb == NULL) {
+		return; // PCB not initialized
+	}
+
+	struct pbuf* p = pbuf_alloc(PBUF_TRANSPORT, strlen(data), PBUF_RAM);
+	if (p != NULL) {
+		memcpy(p->payload, data, strlen(data));
+		//
+		udp_sendto(udpecho_raw_pcb, p, udp_target, udp_target_port);
+		pbuf_free(p);
+	}
 }
 
 void
-udpecho_raw_init(void)
+udpecho_raw_init(const ip_addr_t* ping_addr, const u16_t port)
 {
-  udpecho_raw_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
-  if (udpecho_raw_pcb != NULL) {
-    err_t err;
+	udp_target = ping_addr;
+	udp_target_port = port;
+	udpecho_raw_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
+	if (udpecho_raw_pcb != NULL) {
+		err_t err;
 
-    err = udp_bind(udpecho_raw_pcb, IP_ANY_TYPE, 7);
-    if (err == ERR_OK) {
-      udp_recv(udpecho_raw_pcb, udpecho_raw_recv, NULL);
-    } else {
-      /* abort? output diagnostic? */
-    }
-  } else {
-    /* abort? output diagnostic? */
-  }
+		err = udp_bind(udpecho_raw_pcb, IP_ANY_TYPE, 7);
+		if (err == ERR_OK) {
+			udp_recv(udpecho_raw_pcb, udpecho_raw_recv, NULL);
+		}
+		else {
+			/* abort? output diagnostic? */
+		}
+		//udp_send()
+		sys_timeout(1000, udpecho_raw_send, udpecho_raw_pcb);
+
+	}
+	else {
+		/* abort? output diagnostic? */
+	}
 }
+
+
 
 #endif /* LWIP_UDP */
