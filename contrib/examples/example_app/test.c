@@ -568,7 +568,7 @@ apps_init(void)
   udpecho_init();
 #endif /* LWIP_UDPECHO_APP && LWIP_NETCONN */
 #if LWIP_UDPECHO_APP
-  udpecho_raw_init(&netif_default->gw,1234);
+  udpecho_raw_init(&netif_default->gw,7);
 #endif
 #if LWIP_SOCKET_EXAMPLES_APP && LWIP_SOCKET
   socket_examples_init();
