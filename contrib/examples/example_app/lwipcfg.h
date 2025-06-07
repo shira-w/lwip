@@ -20,13 +20,13 @@
 /* #define USE_AUTOIP  0 */
 
 /* #define USE_PCAPIF 1 */
-#define LWIP_PORT_INIT_IPADDR(addr)   IP4_ADDR((addr), 192,168,41,9)
-#define LWIP_PORT_INIT_GW(addr)       IP4_ADDR((addr), 10,57,163,16)
+#define LWIP_PORT_INIT_IPADDR(addr)   IP4_ADDR((addr), 192,168,41,10)
+#define LWIP_PORT_INIT_GW(addr)       IP4_ADDR((addr), 192,168,41,11)
 #define LWIP_PORT_INIT_NETMASK(addr)  IP4_ADDR((addr), 255,255,255,0)
 
 /* remember to change this MAC address to suit your needs!
    the last octet will be increased by netif->num for each netif */
-#define LWIP_MAC_ADDR_BASE            {0x00,0x01,0x02,0x03,0x04,0x05}
+#define LWIP_MAC_ADDR_BASE            {0x00,0x01,0x02,0x03,0x04,0x06}
 
 /* #define USE_SLIPIF 0 */
 /* #define SIO_USE_COMPORT 0 */
@@ -67,7 +67,7 @@
 /*#define LWIP_TCPECHO_APP_NETCONN   */
 #define LWIP_TFTP_APP                 0
 #define LWIP_TFTP_CLIENT_APP          0
-#define LWIP_UDPECHO_APP              0
+#define LWIP_UDPECHO_APP              1
 #define LWIP_NETCONN                  0
 #define LWIP_LWIPERF_APP              0
 
