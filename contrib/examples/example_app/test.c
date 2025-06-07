@@ -565,6 +565,9 @@ apps_init(void)
 #if LWIP_UDPECHO_APP && LWIP_NETCONN
   udpecho_init();
 #endif /* LWIP_UDPECHO_APP && LWIP_NETCONN */
+
+  //TODO ifdef
+ udpecho_raw_init();
 #if LWIP_SOCKET_EXAMPLES_APP && LWIP_SOCKET
   socket_examples_init();
 #endif /* LWIP_SOCKET_EXAMPLES_APP && LWIP_SOCKET */

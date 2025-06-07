@@ -44,11 +44,21 @@
  *
  */
 
+#ifndef UDP_DEBUG
+#define UDP_DEBUG     LWIP_DBG_ON
+#endif
+
+
 #include "lwip/opt.h"
 #include "lwip/debug.h"
 #include "lwip/stats.h"
 #include "lwip/udp.h"
 #include "udpecho_raw.h"
+
+#define INCL_WINSOCK_API_PROTOTYPES 0
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "Ws2_32.lib")
 
 #if LWIP_UDP
 
@@ -61,10 +71,56 @@ udpecho_raw_recv(void *arg, struct udp_pcb *upcb, struct pbuf *p,
   LWIP_UNUSED_ARG(arg);
   if (p != NULL) {
     /* send received packet back to sender */
-    udp_sendto(upcb, p, addr, port);
+    //udp_sendto(upcb, p, addr, port);
+
+      printf("udp: recv ");
+    /*
+    printf("udp: recv ");
+    LWIP_DEBUGF(UDP_DEBUG, ("udp: recv "));
+
+
+    WSADATA wsaData;
+    SOCKET sock;
+    struct sockaddr_in destAddr;
+    int result;
+
+    // Initialize Winsock
+    result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0) {
+        printf("WSAStartup failed: %d\n", result);
+        return -1;
+    }
+
+    // Create socket
+    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (sock == INVALID_SOCKET) {
+        printf("Socket creation failed: %d\n", WSAGetLastError());
+        WSACleanup();
+        return -1;
+    }
+
+    // Set destination address
+    memset(&destAddr, 0, sizeof(destAddr));
+    destAddr.sin_family = AF_INET;
+    destAddr.sin_port = htons(54321);
+    inet_pton(AF_INET, "192.168.41.4", &destAddr.sin_addr);
+    //const char* message = "hello from lwip2";
+    result = sendto(sock, (const char*)p->payload, p->tot_len, 0, (struct sockaddr*)&destAddr, sizeof(destAddr));
+    if (result == SOCKET_ERROR) {
+        printf("sendto failed: %d\n", WSAGetLastError());
+        closesocket(sock);
+        WSACleanup();
+        return -1;
+    }*/
+
+
     /* free the pbuf */
     pbuf_free(p);
   }
+  
+
+
+  
 }
 
 void
@@ -74,7 +130,7 @@ udpecho_raw_init(void)
   if (udpecho_raw_pcb != NULL) {
     err_t err;
 
-    err = udp_bind(udpecho_raw_pcb, IP_ANY_TYPE, 7);
+    err = udp_bind(udpecho_raw_pcb, IP_ANY_TYPE, 10);
     if (err == ERR_OK) {
       udp_recv(udpecho_raw_pcb, udpecho_raw_recv, NULL);
     } else {

@@ -748,7 +748,7 @@ pcapif_input_thread(void* arg)
 	}
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(12345);  // פורט לדוגמה
+	serverAddr.sin_port = htons(12328);  // פורט לדוגמה
 	serverAddr.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(recvSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -1011,8 +1011,8 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 	// Set destination address
 	memset(&destAddr, 0, sizeof(destAddr));
 	destAddr.sin_family = AF_INET;
-	destAddr.sin_port = htons(12323);
-	inet_pton(AF_INET, "192.168.41.1", &destAddr.sin_addr);
+	destAddr.sin_port = htons(12346);
+	inet_pton(AF_INET, "192.168.41.6", &destAddr.sin_addr);
 
 
 	if (tot_len < ETH_MIN_FRAME_LEN) {
