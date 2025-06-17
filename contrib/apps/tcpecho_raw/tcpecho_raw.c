@@ -336,6 +336,13 @@ tcpecho_raw_init(const ip_addr_t* ping_addr)
     } else {
       /* abort? output diagnostic? */
     }
+
+    struct tcp_pcb* client = tcp_new_ip_type(IPADDR_TYPE_ANY);
+    //ip_addr_t server_ip= ping_addr;
+    //IP4_ADDR(&server_ip, 192, 168, 1, 100); // remote server IP
+
+    err = tcp_connect(client, ping_addr, 7, my_tcp_connected_cb);
+    printf("%d", err);
   } else {
     /* abort? output diagnostic? */
   }
@@ -368,11 +375,7 @@ tcpecho_raw_init(const ip_addr_t* ping_addr)
 
   sys_timeout(1000, tcpecho_timeout_send, args);*/
 
-  struct tcp_pcb* client = tcp_new_ip_type(IPADDR_TYPE_ANY);
-  //ip_addr_t server_ip= ping_addr;
-  //IP4_ADDR(&server_ip, 192, 168, 1, 100); // remote server IP
-
-  tcp_connect(client, ping_addr, 7, my_tcp_connected_cb);
+  
 }
 
 #endif /* LWIP_TCP && LWIP_CALLBACK_API */
