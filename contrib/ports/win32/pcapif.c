@@ -1317,3 +1317,10 @@ pcapif_poll(struct netif* netif)
 #endif /* !PCAPIF_RX_USE_THREAD */
 
 #endif /* LWIP_ETHERNET */
+
+
+//lwip lib not app
+// our lib another = contrib
+// not in lib: pcapif, examples
+//porting layer sys_achh imlementation of os. need it as it is
+//pcapif : pipe with some name take packet and 
