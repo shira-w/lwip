@@ -296,6 +296,7 @@ tcpecho_raw_init(void)
   } else {
     /* abort? output diagnostic? */
   }
+  sys_timeout(1000, tcpecho_raw_send, tcpecho_raw_pcb);
 }
 
 #endif /* LWIP_TCP && LWIP_CALLBACK_API */
