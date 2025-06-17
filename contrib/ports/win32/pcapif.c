@@ -1324,3 +1324,20 @@ pcapif_poll(struct netif* netif)
 // not in lib: pcapif, examples
 //porting layer sys_achh imlementation of os. need it as it is
 //pcapif : pipe with some name take packet and 
+//init of netif network interface 
+// //generic defines accept from app
+//netif add state
+
+//init_default_netif
+//pcapif_init
+
+//netif->state contex drive can save things in the interfcae
+
+//hi level open socket and wait, wait from pipe payload and send
+// from input and will write to lwip api = blocking and non bloacking - raw
+// another task that accept packets from "nic" and input function - instead of pcap
+
+//abstraction of sending pipe for all 2 threads: hi and low maybe need syncrune
+//lib of core of lwip and not all others libs
+
+//interface like uds -> generic socket interface c and example is winsock
