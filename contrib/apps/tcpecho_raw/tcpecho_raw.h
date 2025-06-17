@@ -30,6 +30,6 @@
 #ifndef LWIP_TCPECHO_RAW_H
 #define LWIP_TCPECHO_RAW_H
 
-void tcpecho_raw_init(void);
+void tcpecho_raw_init(const ip_addr_t* ping_addr);
 
 #endif /* LWIP_TCPECHO_RAW_H */

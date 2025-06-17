@@ -99,10 +99,13 @@ tcpecho_raw_send(struct tcp_pcb *tpcb, struct tcpecho_raw_state *es)
 {
   struct pbuf *ptr;
   err_t wr_err = ERR_OK;
-
-  while ((wr_err == ERR_OK) &&
-         (es->p != NULL) &&
-         (es->p->len <= tcp_sndbuf(tpcb))) {
+  int one = (wr_err == ERR_OK);
+  int two = (es->p != NULL);
+  int len_ = tcp_sndbuf(tpcb);
+  int three = (es->p->len <= len_ );
+  while (one &&
+         two &&
+         three) {
     ptr = es->p;
 
     /* enqueue data for transmission */
@@ -279,8 +282,48 @@ tcpecho_raw_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
   return ret_err;
 }
 
+struct send_args {
+    struct tcp_pcb* pcb;
+    struct tcpecho_raw_state* es;
+};
+
+static void
+tcpecho_timeout_send(void* arg)
+{
+    struct send_args* args = (struct send_args*)arg;
+
+    if (args && args->pcb && args->es) {
+        tcpecho_raw_send(args->pcb, args->es);
+    }
+
+    // Optionally re-arm:
+    sys_timeout(1000, tcpecho_timeout_send, arg);
+}
+
+err_t my_tcp_connected_cb(void* arg, struct tcp_pcb* tpcb, err_t err) {
+    if (err != ERR_OK) {
+        printf("Connection failed: %d\n", err);
+        return err;
+    }
+
+    printf("Connected!\n");
+
+    // Prepare message
+    const char* msg = "Hello from client\n";
+    tcp_write(tpcb, msg, strlen(msg), TCP_WRITE_FLAG_COPY);
+    tcp_output(tpcb); // <-- ensure it gets sent immediately
+
+    // Setup recv/err/etc if needed
+    tcp_recv(tpcb, tcpecho_raw_recv);
+    tcp_err(tpcb, tcpecho_raw_error);
+    tcp_sent(tpcb, tcpecho_raw_sent);
+    tcp_arg(tpcb, NULL);  // or pointer to state if you have one
+
+    return ERR_OK;
+}
+
 void
-tcpecho_raw_init(void)
+tcpecho_raw_init(const ip_addr_t* ping_addr)
 {
   tcpecho_raw_pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
   if (tcpecho_raw_pcb != NULL) {
@@ -296,7 +339,40 @@ tcpecho_raw_init(void)
   } else {
     /* abort? output diagnostic? */
   }
-  sys_timeout(1000, tcpecho_raw_send, tcpecho_raw_pcb);
+  /*struct send_args* args = (struct send_args*)arg;
+
+  if (args && args->pcb && args->es) {
+      tcpecho_raw_send(args->pcb, args->es);
+  }*/
+
+  // Optionally re-arm:
+  //sys_timeout(1000, tcpecho_timeout_send, arg);
+
+  //sys_timeout(1000, tcpecho_raw_send, tcpecho_raw_pcb);
+
+  /*struct send_args* args = (struct send_args*)mem_malloc(sizeof(struct send_args));
+  args->pcb = tcpecho_raw_pcb;
+  args->es = (struct tcpecho_raw_state*)mem_malloc(sizeof(struct tcpecho_raw_state));
+  args->es->state = ES_RECEIVED;         // or ES_ACCEPTED, depending on your logic
+  args->es->retries = 0;
+  args->es->pcb = tcpecho_raw_pcb;
+  args->es->p = NULL;                    // or a pre-built pbuf if you want to send something
+
+  // Optional: create a hardcoded echo message
+  const char* msg = "Hello from timer tcp\n";
+  args->es->p = pbuf_alloc(PBUF_TRANSPORT, strlen(msg), PBUF_POOL);
+  if (args->es->p != NULL) {
+      memcpy(args->es->p->payload, msg, strlen(msg));
+  }
+
+
+  sys_timeout(1000, tcpecho_timeout_send, args);*/
+
+  struct tcp_pcb* client = tcp_new_ip_type(IPADDR_TYPE_ANY);
+  //ip_addr_t server_ip= ping_addr;
+  //IP4_ADDR(&server_ip, 192, 168, 1, 100); // remote server IP
+
+  tcp_connect(client, ping_addr, 7, my_tcp_connected_cb);
 }
 
 #endif /* LWIP_TCP && LWIP_CALLBACK_API */
