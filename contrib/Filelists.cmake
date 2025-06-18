@@ -55,7 +55,14 @@ set(lwipcontribaddons_SRCS
 #    ${LWIP_CONTRIB_DIR}/addons/netconn/external_resolve/dnssd.c
 #    ${LWIP_CONTRIB_DIR}/addons/tcp_md5/tcp_md5.c
 )
+
 add_library(lwipcontribaddons EXCLUDE_FROM_ALL ${lwipcontribaddons_SRCS})
 target_compile_options(lwipcontribaddons PRIVATE ${LWIP_COMPILER_FLAGS})
 target_compile_definitions(lwipcontribaddons PRIVATE ${LWIP_DEFINITIONS} ${LWIP_MBEDTLS_DEFINITIONS})
 target_include_directories(lwipcontribaddons PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})
+
+set(lwipcontribdatapipe_SRCS
+    ${LWIP_CONTRIB_DIR}/data_pipe/data_pipe.c
+)
+
+add_library(lwipcontribdatapipe EXCLUDE_FROM_ALL ${lwipcontribdatapipe_SRCS})

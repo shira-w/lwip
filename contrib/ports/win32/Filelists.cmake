@@ -44,5 +44,5 @@ target_include_directories(lwipcontribportwindows PRIVATE ${LWIP_INCLUDE_DIRS} $
 # "${WPDPACK_DIR}/include"
 target_compile_options(lwipcontribportwindows PRIVATE ${LWIP_COMPILER_FLAGS})
 target_compile_definitions(lwipcontribaddons PRIVATE ${LWIP_DEFINITIONS} ${LWIP_MBEDTLS_DEFINITIONS})
-target_link_libraries(lwipcontribportwindows PUBLIC  ${LWIP_MBEDTLS_LINK_LIBRARIES})
+target_link_libraries(lwipcontribportwindows PUBLIC  ${LWIP_MBEDTLS_LINK_LIBRARIES} lwipcontribdatapipe)
 #${WPCAP} ${PACKET}
