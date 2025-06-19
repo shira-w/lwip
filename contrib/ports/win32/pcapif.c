@@ -1341,3 +1341,5 @@ pcapif_poll(struct netif* netif)
 //lib of core of lwip and not all others libs
 
 //interface like uds -> generic socket interface c and example is winsock
+
+//|up> defines for it in hilevel-apps
