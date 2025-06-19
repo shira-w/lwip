@@ -62,7 +62,7 @@ target_compile_definitions(lwipcontribaddons PRIVATE ${LWIP_DEFINITIONS} ${LWIP_
 target_include_directories(lwipcontribaddons PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})
 
 set(lwipcontribdatapipe_SRCS
-    ${LWIP_CONTRIB_DIR}/data_pipe/data_pipe.c
+    ${LWIP_CONTRIB_DIR}/data_pipe/win_sock_data_pipe.cc
 )
 
 add_library(lwipcontribdatapipe EXCLUDE_FROM_ALL ${lwipcontribdatapipe_SRCS})
