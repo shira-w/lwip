@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-project(lwIP)
+project(lwIP LANGUAGES C CXX )
+set(TRACEDESIGNTIME true)
 
 # Example lwIP application
 set(LWIP_DIR ${CMAKE_CURRENT_SOURCE_DIR})

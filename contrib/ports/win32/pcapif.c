@@ -84,9 +84,10 @@
 #define WIN32_LEAN_AND_MEAN
 //#define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
 #define INCL_WINSOCK_API_PROTOTYPES 0
-#include <winsock2.h>
+/*#include <winsock2.h>
 #include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Ws2_32.lib")*/
+#include "data_pipe/data_pipe.h"
 
 ///////////////////////////*/
 
@@ -987,8 +988,8 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 		return ERR_BUF;
 	}*/
 
-
-	WSADATA wsaData;
+	//CreateDataPipe
+	/*WSADATA wsaData;
 	SOCKET sock;
 	struct sockaddr_in destAddr;
 	int result;
@@ -1014,7 +1015,7 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 	destAddr.sin_port = htons(12345);
 	inet_pton(AF_INET, "192.168.41.3", &destAddr.sin_addr);
 
-
+	*/
 	if (tot_len < ETH_MIN_FRAME_LEN) {
 		/* ensure minimal frame length */
 		memset(&buf[tot_len], 0, ETH_MIN_FRAME_LEN - tot_len);
@@ -1023,13 +1024,13 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 
 
 	// Send the data
-	result = sendto(sock, (const char*)buf, tot_len, 0, (struct sockaddr*)&destAddr, sizeof(destAddr));
+	/*result = sendto(sock, (const char*)buf, tot_len, 0, (struct sockaddr*)&destAddr, sizeof(destAddr));
 	if (result == SOCKET_ERROR) {
 		printf("sendto failed: %d\n", WSAGetLastError());
 		closesocket(sock);
 		WSACleanup();
 		return -1;
-	}
+	}*/
 
 	//was 42 become 60
 	printf("Sending packet of length %d:\n", tot_len);
