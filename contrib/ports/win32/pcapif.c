@@ -84,10 +84,10 @@
 #define WIN32_LEAN_AND_MEAN
 //#define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
 #define INCL_WINSOCK_API_PROTOTYPES 0
-/*#include <winsock2.h>
+#include <winsock2.h>
 #include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")*/
-#include "data_pipe/data_pipe.h"
+#pragma comment(lib, "Ws2_32.lib")
+#include "data_pipe/data_pipe_c_api.h"
 
 ///////////////////////////*/
 
@@ -154,6 +154,7 @@
 #if PCAPIF_HANDLE_LINKSTATE
 #include "pcapif_helper.h"
 #include <winsock.h>
+#include "check/stdbool.h"
 
 	/* Define "PHY" delay when "link up" */
 #ifndef PCAPIF_LINKUP_DELAY
@@ -987,8 +988,8 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 		MIB2_STATS_NETIF_INC(netif, ifoutdiscards);
 		return ERR_BUF;
 	}*/
+	datapip_handle handle = datapip_create("192.168.41.3", false, 12345);
 
-	//CreateDataPipe
 	/*WSADATA wsaData;
 	SOCKET sock;
 	struct sockaddr_in destAddr;
@@ -1014,15 +1015,18 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 	destAddr.sin_family = AF_INET;
 	destAddr.sin_port = htons(12345);
 	inet_pton(AF_INET, "192.168.41.3", &destAddr.sin_addr);
-
 	*/
+	
 	if (tot_len < ETH_MIN_FRAME_LEN) {
 		/* ensure minimal frame length */
 		memset(&buf[tot_len], 0, ETH_MIN_FRAME_LEN - tot_len);
 		tot_len = ETH_MIN_FRAME_LEN;
 	}
-
-
+	int res = datapip_sendto(handle, buf, tot_len);
+	if (res != tot_len){//TODO
+		//TODO
+	}
+	
 	// Send the data
 	/*result = sendto(sock, (const char*)buf, tot_len, 0, (struct sockaddr*)&destAddr, sizeof(destAddr));
 	if (result == SOCKET_ERROR) {
@@ -1067,7 +1071,7 @@ pcapif_output(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 	printf("\n");
 	printf("EtherType: 0x%04X\n", lwip_htons(ethhdr->type));
 	printf("\n");
-
+	datapip_destroy(handle);
 	return ERR_OK;
 }
 

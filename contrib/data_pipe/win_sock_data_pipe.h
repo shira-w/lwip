@@ -10,10 +10,10 @@
 
 class DataPipeWinSock : public DataPipe {
 public:
-    DataPipeWinSock(const std::string& address, bool is_server);
+    DataPipeWinSock(const std::string& address, bool is_server,int port);
     ~DataPipeWinSock() override;
 
-    void SendTo(const void* data, size_t size) override;
+    int SendTo(const void* data, size_t size) override;
     void ReceiveFrom(void* buffer, size_t size) override;
 
 private:
